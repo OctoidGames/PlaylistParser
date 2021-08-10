@@ -29,5 +29,4 @@ after the script is done, you will now be able to run the python script. Use `py
 
 # wanted features:
 * GUI to manually input song artists and titles the program got wrong
-* threading to parse files in parellel as aposed to one after another.
 * windows translation
