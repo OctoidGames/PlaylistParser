@@ -9,7 +9,6 @@ This is a continuation of that script, but with the ability to download the song
 # How to use
 #### Built for Linux systems | tested on Ubuntu 20.04
 Asuming you have the dependencies installed. navigate to the folder PlaylistToMp3.py is in and run it in the terminal with `python3 PlaylistToMp3.py`. It will ask you for the playlist link so paste it into the terminal. the link should look like `https://www.youtube.com/playlist?list=XXXXXXXXXXXXXXXXXXX`
-Now wait, it should tell you what is happening. 
 
 # How to Install
 There is no real instalation process as it is just a python script. However, I have added a `Dep.sh` that you can run to install the dependencies
