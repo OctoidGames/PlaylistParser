@@ -4,6 +4,7 @@ from moviepy.editor import *
 from pydub import AudioSegment
 import webbrowser
 import shutil
+import threading
 
 
 def mkfolder(name):  # makes folder without breaking
@@ -28,7 +29,19 @@ def mp4_to_mp3(mp4, mp3):     # this function converts from mp4 to mp3 using the
     mp4.write_audiofile(mp3)     # converts to mp3
     mp4.close() # function call mp4_to_mp3("my_mp4_path.mp4", "audio.mp3")
 
-# downloaded is a temperary folder (and I can't spell
+
+def clip(file):
+    print("picked mp3: " + file)
+    sound = AudioSegment.from_file(os.curdir + "/NewAudio/" + file, format="mp3")
+
+    start_trim = detect_leading_silence(sound)  # find silent part in beginning
+    end_trim = detect_leading_silence(sound.reverse())  # send reversed song into function to get silence at end
+
+    duration = len(sound)
+    trimmed_sound = sound[start_trim:duration - end_trim]  # trim song
+
+    trimmed_sound.export("completed/" + file, format="mp3")  # export trimmed song
+    print("exported:" + file)
 
 
 p = Playlist(input("playlist link: "))  # will change to args later
@@ -50,11 +63,21 @@ print("downloaded all songs, parsing audio")
 mkfolder("audio")
 mkfolder("NewAudio") #makes folders
 
+Tlist = []
 
-for file in os.listdir(os.curdir+"/downloaded"):
+for file in os.listdir(os.curdir+"/downloaded"): # this adds threads set to parse each song to a list
     if file.endswith('.mp4'):  # filter those blasted mp4s
-        mp4_to_mp3("downloaded/"+file,"audio/"+file[:-1] + '3') # this only workd because mp4 and mp3 are one charector different, it cuts off the 4 and appends a 3
+        #mp4_to_mp3("downloaded/"+file,"audio/"+file[:-1] + '3')
+        t = threading.Thread(target=mp4_to_mp3, args=("downloaded/"+file, "audio/"+file[:-1] + '3'))
+        Tlist.append(t)
+        # this only workd because mp4 and mp3 are one charector different, it cuts off the 4 and appends a 3
         #pymovie likes to write to console alot, don't know how to disable so I keep it
+
+for t in Tlist:  # opens the floodgates!! (starts the treads)
+    t.start()
+
+for t in Tlist:  # waits until all the treads are done
+    t.join()
 
 print("[Done] starting decifering Metadata")
 
@@ -72,19 +95,18 @@ for file in os.listdir(os.curdir+"/audio"):
 print("completed decidering - starting clipping process")
 mkfolder("completed")
 
+Tlist = [] # clears the Thread List
+
 for file in os.listdir(os.curdir+"/NewAudio"):
     if file.endswith('.mp3'):
-        print("picked mp3: " + file)
-        sound = AudioSegment.from_file(os.curdir + "/NewAudio/" + file, format="mp3")
+        t = threading.Thread(target=clip, args=(file,))
+        Tlist.append(t)
 
-        start_trim = detect_leading_silence(sound)  # find silent part in begining
-        end_trim = detect_leading_silence(sound.reverse())  # send reversed song into function to get silence at end
+for t in Tlist:
+    t.start()
 
-        duration = len(sound)
-        trimmed_sound = sound[start_trim:duration - end_trim]  # trim song
-
-        trimmed_sound.export("completed/" + file, format="mp3")  # export trimmed song
-        print("exported:" + file)
+for t in Tlist:
+    t.join()
 
 print("cleaning up the mess")
 
