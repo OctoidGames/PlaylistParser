@@ -3,8 +3,13 @@ from youtube_title_parse import get_artist_title
 from moviepy.editor import *
 from pydub import AudioSegment
 import webbrowser
-import shutil
 import threading
+
+
+def PURGE(folder):  # deletes directory and contents
+    for file in os.listdir(os.curdir + "/"+folder):
+        os.remove(os.curdir + "/"+folder+"/"+file)
+    os.rmdir(os.curdir + "/"+folder)
 
 
 def mkfolder(name):  # makes folder without breaking
@@ -110,9 +115,9 @@ for t in Tlist:
 
 print("cleaning up the mess")
 
-shutil.rmtree('/audio', ignore_errors=True)  # remove folders with unprocessed files
-shutil.rmtree('/NewAudio', ignore_errors=True)
-shutil.rmtree('/downloaded', ignore_errors=True)
+PURGE("audio")  # I made a purge function because you have to delete the directory contents before you can delete the directory
+PURGE("NewAudio")
+PURGE("downloaded")
 
 print("completed!")
 
