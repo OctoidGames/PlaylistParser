@@ -8,7 +8,7 @@ This is a continuation of that script, but with the ability to download the song
 
 # How to use
 #### Built for Linux systems | tested on Ubuntu 20.04
-Asuming you have the dependencies installed. navigate to the folder PlaylistToMp3.py is in and run it in the terminal with `python3 PlaylistToMp3.py`. It will ask you for the playlist link so paste it into the terminal. the link should look like `https://www.youtube.com/playlist?list=XXXXXXXXXXXXXXXXXXX`
+Asuming you have the dependencies installed. navigate to the folder PlaylistToMp3.py is in and run it in the terminal with `python3 PlaylistToMp3.py`. It will ask you for the playlist link so paste it into the terminal. the link should look like `https://www.youtube.com/playlist?list=XXXXXXXXXXXXXXXXXXX` After the script has run, a GUI will pop up with the youtube name and the artist and title guessed by the machine. Here you can edit these and make sure all the metadata is correct.
 
 # How to Install
 There is no real instalation process as it is just a python script. However, I have added a `Dep.sh` that you can run to install the dependencies
@@ -27,5 +27,4 @@ you will need to put in a password because it is installing things using apt. to
 after the script is done, you will now be able to run the python script. Use `python3 PlaylistToMp3.py` to run it and fill in the prompts as given
 
 # wanted features:
-* GUI to manually input song artists and titles the program got wrong
 * windows translation
