@@ -7,6 +7,16 @@ import threading
 from tkinter import *
 
 
+def deEmojify(text):
+    regrex_pattern = re.compile(pattern = "["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                           "]+", flags = re.UNICODE)
+    return regrex_pattern.sub(r'', text)
+
+
 def PURGE(folder):  # deletes directory and contents
     for file in os.listdir(os.curdir + "/" + folder):
         os.remove(os.curdir + "/" + folder + "/" + file)
@@ -90,7 +100,8 @@ Tlist = []
 for file in os.listdir(os.curdir + "/downloaded"):  # this adds threads set to parse each song to a list
     if file.endswith('.mp4'):  # filter those blasted mp4s
         # mp4_to_mp3("downloaded/"+file,"audio/"+file[:-1] + '3')
-        t = threading.Thread(target=mp4_to_mp3, args=("downloaded/" + file, "audio/" + file[:-1] + '3'))
+        NEW = "audio/" + deEmojify(file[:-1] + '3')
+        t = threading.Thread(target=mp4_to_mp3, args=("downloaded/" + file, NEW))
         Tlist.append(t)
         # this only workd because mp4 and mp3 are one charector different, it cuts off the 4 and appends a 3
         # pymovie likes to write to console alot, don't know how to disable so I keep it
