@@ -80,7 +80,8 @@ for video in songs:  # for video in playlists
 
     try:
         # downloading the video
-        stream.download("downloaded")
+        f = stream.download("downloaded")
+        #os.rename(f, deEmojify(f.title()))
     except Exception as e:
         if hasattr(e, 'message'):
             print(e.message)
@@ -137,10 +138,10 @@ PURGE("downloaded")
 
 print("completed!")
 
-try:
-    webbrowser.open(os.curdir + "/completed")
-except:
-    print("failed to open folder, find your completed songs in the 'completed' directory")
+#try:
+#    webbrowser.open(os.curdir + "/completed")
+#except:
+#    print("failed to open folder, find your completed songs in the 'completed' directory")
 
 s = {}
 
@@ -192,12 +193,24 @@ def myfunction(event):
     canvas.configure(scrollregion=canvas.bbox("all"), width=680, height=440)
 
 
+def removeDots(dottedString):
+    dottedString.replace(".", "")
+    return dottedString
+
+
 def save():
     for i in range(len(s)):
         g = list(s.items())[i][0]
-        os.rename('completed/' + g, 'NewAudio/' + artists[i].get() + " - " + titles[i].get())
+        os.rename('completed/' + g, 'NewAudio/' + artists[i].get() + " - " + removeDots(titles[i].get()))
 
     print("closing window")
+
+    try:
+        webbrowser.open(os.curdir + "/NewAudio")
+    except:
+        print("failed to open folder, find your completed songs in the 'NewAudio' directory")
+
+    PURGE("completed")
     root.destroy()
 
 
