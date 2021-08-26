@@ -5,7 +5,9 @@ from pydub import AudioSegment
 import webbrowser
 import threading
 from tkinter import *
+import time
 
+sema = threading.BoundedSemaphore(value=32)
 
 def deEmojify(text):
     regrex_pattern = re.compile(pattern = "["
@@ -42,11 +44,13 @@ def detect_leading_silence(sound, silence_threshold=-50.0,
     return trim_ms
 
 
-def mp4_to_mp3(mp4,
-               mp3):  # this function converts from mp4 to mp3 using the pymovie library. it is used because pytube returns an mp4 with no video
+def mp4_to_mp3(mp4, mp3, thread_number):  # this function converts from mp4 to mp3 using the pymovie library. it is used because pytube returns an mp4 with no video
+    sema.acquire()
+    print("strarting #" + str(tn))
     mp4 = AudioFileClip(mp4)  # makes it usable
     mp4.write_audiofile(mp3)  # converts to mp3
     mp4.close()  # function call mp4_to_mp3("my_mp4_path.mp4", "audio.mp3")
+    sema.release()
 
 
 def clip(file):
@@ -97,18 +101,23 @@ mkfolder("audio")
 mkfolder("NewAudio")  # makes folders
 
 Tlist = []
+tn = 0
 
 for file in os.listdir(os.curdir + "/downloaded"):  # this adds threads set to parse each song to a list
     if file.endswith('.mp4'):  # filter those blasted mp4s
         # mp4_to_mp3("downloaded/"+file,"audio/"+file[:-1] + '3')
+        tn += 1
         NEW = "audio/" + deEmojify(file[:-1] + '3')
-        t = threading.Thread(target=mp4_to_mp3, args=("downloaded/" + file, NEW))
+        t = threading.Thread(target=mp4_to_mp3, args=("downloaded/" + file, NEW, tn))
         Tlist.append(t)
-        # this only workd because mp4 and mp3 are one charector different, it cuts off the 4 and appends a 3
-        # pymovie likes to write to console alot, don't know how to disable so I keep it
+        # this only worked because mp4 and mp3 are one character different, it cuts off the 4 and appends a 3
+        # pymovie likes to write to console a lot, don't know how to disable so I keep it
 
-for t in Tlist:  # opens the floodgates!! (starts the treads)
+
+for t in Tlist:  # starts all threads
     t.start()
+
+time.sleep(1)
 
 for t in Tlist:  # waits until all the treads are done
     t.join()
