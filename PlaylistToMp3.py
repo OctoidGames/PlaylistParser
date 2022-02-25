@@ -1,4 +1,6 @@
-from pytube import Playlist
+import re
+
+from pytube import *
 from youtube_title_parse import get_artist_title
 from moviepy.editor import *
 from pydub import AudioSegment
@@ -66,6 +68,9 @@ def clip(file):
     trimmed_sound.export("completed/" + file, format="mp3")  # export trimmed song
     print("exported:" + file)
 
+mkfolder("audio")
+mkfolder("downloaded")
+mkfolder("NewAudio")  # makes folders
 
 p = Playlist(input("playlist link: "))  # will change to args later
 
@@ -79,8 +84,10 @@ for video in songs:  # for video in playlists
     count += 1
     print("[downloading] " + video.title + " : song " + str(count) + " of " + str(
         len(songs)))  # I like to put these in so I can see it work and I don't get scared
-    stream = video.streams.get_audio_only()  # doesn't bother with video, still returns an mp4 tho
-    print("filesize: " + str(stream.filesize_approx) + "B")  # I use this as a time estimate
+    video.streams.filter(only_audio=True) # doesn't bother with video, still returns an mp4 tho
+    stream = video.streams.filter(only_audio=True).first()  # doesn't bother with video, still returns an mp4 tho
+
+    print("filesize: " + str(stream.filesize) + "B")  # I use this as a time estimate
 
     try:
         # downloading the video
@@ -96,9 +103,6 @@ for video in songs:  # for video in playlists
     print('Download Complete')
 
 print("downloaded all songs, parsing audio")
-
-mkfolder("audio")
-mkfolder("NewAudio")  # makes folders
 
 Tlist = []
 tn = 0
@@ -140,8 +144,7 @@ for t in Tlist:
 
 print("cleaning up the mess")
 
-PURGE(
-    "audio")  # I made a purge function because you have to delete the directory contents before you can delete the directory
+PURGE("audio")  # I made a purge function because you have to delete the directory contents before you can delete the directory
 PURGE("NewAudio")
 PURGE("downloaded")
 
@@ -230,16 +233,21 @@ root = Tk()
 
 root.geometry("720x480")
 
-myframe = Frame(root, relief=GROOVE, width=700, height=460, bd=1, bg='blue')
-myframe.place(x=10, y=10)
+#myframe = Frame(root, relief=GROOVE, bd=1, bg='blue')
+myframe = LabelFrame(root, text="Edit Your Files", padx=5, pady=5)
+myframe.pack(side="left", expand=True)
 
 canvas = Canvas(myframe)
 frame = Frame(canvas)
 myscrollbar = Scrollbar(myframe, orient="vertical", command=canvas.yview)
 canvas.configure(yscrollcommand=myscrollbar.set)
 
+myotherscrollbar = Scrollbar(myframe, orient="horizontal", command=canvas.xview)
+canvas.configure(xscrollcommand=myotherscrollbar.set)
+
 myscrollbar.pack(side="right", fill="y")
-canvas.pack(side="left")
+myotherscrollbar.pack(side="bottom", fill="x")
+canvas.pack(side="left", expand=True)
 canvas.create_window((0, 0), window=frame, anchor='nw')
 frame.bind("<Configure>", myfunction)
 
